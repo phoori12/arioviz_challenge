@@ -1,0 +1,10 @@
+<launch>
+    <!-- Start TurtleBot3 Simulation -->
+    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_world.launch"/>
+
+    <!-- Start IMU Data Publisher -->
+    <node pkg="ttb_imu_interface" type="imu_inter" name="imu_inter" output="screen"/>
+
+    <!-- Start IMU to cmd_vel Node -->
+    <node pkg="ttb_imu_interface" type="botop" name="botop" output="screen"/>
+</launch>

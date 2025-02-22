@@ -1,0 +1,19 @@
+<launch>
+    <!-- Start the Extended Kalman Filter node -->
+    <!-- <node pkg="robot_localization" type="ekf_localization_node" name="ekf_filter_node" output="screen">
+        
+        <param name="~config" command="load" file="$(find ttb_imu_interface)/config/ekf.yaml" />
+        
+    </node> -->
+
+     <!-- Load EKF parameters from YAML -->
+    <rosparam file="$(find ttb_imu_interface)/config/ekf.yaml" command="load"/>
+
+    <!-- Start the Extended Kalman Filter node -->
+    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_filter_node" output="screen"/>
+    
+    
+    <!-- IMU Driver Node (Make sure your IMU publishes to /imu/data) -->
+    <node pkg="ttb_imu_interface" type="imu_inter" name="imu_inter" output="screen">
+    </node>
+</launch>

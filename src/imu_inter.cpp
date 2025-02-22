@@ -61,13 +61,13 @@ int main(int argc, char** argv) {
                 buffer[0] = byte;
                 ser.read(&buffer[1], PACKET_SIZE - 1); // Read remaining bytes
 
-                // Debug: Print raw packet
-                printf("Raw Packet: ");
-                for (int i = 0; i < PACKET_SIZE; i++)
-                {
-                    printf("%02X ", buffer[i]);
-                }
-                printf("\n");
+                // // Debug: Print raw packet
+                // printf("Raw Packet: ");
+                // for (int i = 0; i < PACKET_SIZE; i++)
+                // {
+                //     printf("%02X ", buffer[i]);
+                // }
+                // printf("\n");
 
                 // Validate packet
                 if (buffer[0] == '#' && buffer[1] == 's' && buffer[26] == '\r' && buffer[27] == '\n')
@@ -78,6 +78,8 @@ int main(int argc, char** argv) {
                     float gy = bytesToFloat(&buffer[14]);
                     float gp = bytesToFloat(&buffer[18]);
                     float gr = bytesToFloat(&buffer[22]);
+
+                    // TODO: FILTERS
 
                     tf2::Quaternion q;
                     q.setRPY(gr * M_PI / 180.0, gp * M_PI / 180.0, gy * M_PI / 180.0); // Convert to radians
@@ -99,7 +101,7 @@ int main(int argc, char** argv) {
 
                     imu_pub.publish(imu_msg);
 
-                    ROS_INFO("IMU Data: ax=%.3f ay=%.3f az=%.3f gy=%.3f gp=%.3f gr=%.3f", ax, ay, az, gy, gp, gr);
+                    // ROS_INFO("IMU Data: ax=%.3f ay=%.3f az=%.3f gy=%.3f gp=%.3f gr=%.3f", ax, ay, az, gy, gp, gr);
                 }
                 else
                 {

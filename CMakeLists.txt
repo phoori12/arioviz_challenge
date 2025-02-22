@@ -130,6 +130,10 @@ add_executable(imu_inter src/imu_inter.cpp)
 target_link_libraries(imu_inter ${catkin_LIBRARIES})
 add_dependencies(imu_inter ${catkin_EXPORTED_TARGETS})
 
+add_executable(botop src/botop.cpp)
+target_link_libraries(botop ${catkin_LIBRARIES})
+add_dependencies(botop ${catkin_EXPORTED_TARGETS})
+
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/ttb_imu_interface.cpp
