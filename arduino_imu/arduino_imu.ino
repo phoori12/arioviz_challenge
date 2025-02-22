@@ -69,7 +69,7 @@ void setup() {
     // initialize serial communication
     // (115200 chosen because it is required for Teapot Demo output, but it's
     // really up to you depending on your project)
-    Serial.begin(9600);
+    Serial.begin(115200);
     while (!Serial); 
 
     delay(500);
@@ -170,7 +170,7 @@ void loop() {
   }
  
   sendCmd(ypr_USED_MPU, acc_USED_MPU);
-  delay(10);
+//  delay(10);
   
 }
 
@@ -183,16 +183,16 @@ void sendCmd(float ypr[], float acc[]) {
   gp1.i = ypr[1];
   gr1.i = ypr[2];
 
-  const char buf[52] = {'#', 's', ax1.b[3], ax1.b[2], ax1.b[1], ax1.b[0],
-                                  ay1.b[3], ay1.b[2], ay1.b[1], ay1.b[0],
-                                  az1.b[3], az1.b[2], az1.b[1], az1.b[0],
-                                  gy1.b[3], gy1.b[2], gy1.b[1], gy1.b[0],
-                                  gp1.b[3], gp1.b[2], gp1.b[1], gp1.b[0],
-                                  gr1.b[3], gr1.b[2], gr1.b[1], gr1.b[0],
+  const char buf[28] = {'#', 's', ax1.b[0], ax1.b[1], ax1.b[2], ax1.b[3],
+                                  ay1.b[0], ay1.b[1], ay1.b[2], ay1.b[3],
+                                  az1.b[0], az1.b[1], az1.b[2], az1.b[3],
+                                  gy1.b[0], gy1.b[1], gy1.b[2], gy1.b[3],
+                                  gp1.b[0], gp1.b[1], gp1.b[2], gp1.b[3],
+                                  gr1.b[0], gr1.b[1], gr1.b[2], gr1.b[3],
                         '\r', '\n'
                        };
 
- for (uint8_t i = 0; i < 52; i++) {
+ for (uint8_t i = 0; i < 28; i++) {
    // Serial.write(cmd[i]);
     Serial.write(buf[i]);
   }                
