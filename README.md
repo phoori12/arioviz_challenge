@@ -32,5 +32,5 @@ I now wrote a seperated node to subscribe from the imu_inter node and translate 
    
 After everything is done, I went back to the imu_inter node and tried playing around with filters. I decided to use the complementary filter in this case because it was easy to implement but not too simple like the moving average. I know the EKF is likely the best option for this but if I were to use it, I have to change the packets in the arduino side to send angular velocity instead of roll, pitch, yaw. And I also have not much experience with EKF, so I decided to drop the idea to save time.
 
-Problems encountered during the challenge
+## Problems encountered during the challenge
 * The controls are a little bit sluggish and non-responsive. I think this is due to me using the DMP for sensor fusion, if I were to send the raw data and work on it on the ROS side, I would have more control and will fix it eventually. But it will take a lot of time.
