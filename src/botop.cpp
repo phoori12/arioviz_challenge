@@ -21,7 +21,8 @@ void imuCallback(const sensor_msgs::Imu::ConstPtr& msg)
     double roll, pitch, yaw;
     tf2::Matrix3x3(q).getRPY(roll, pitch, yaw);
 
-    yaw = -yaw;
+    yaw = -yaw; // Invert Rotation
+
     // if (fabs(yaw) >= 0.3) {
     //     yaw = 0;
     // } 
@@ -29,18 +30,17 @@ void imuCallback(const sensor_msgs::Imu::ConstPtr& msg)
     // if (fabs(pitch) >= 0.3) {
     //     pitch = 0;
     // }
+
     // Map Pitch to Forward/Backward Motion (X-axis)
-    double linear_x = MAX_LINEAR_SPEED * pitch;  // Move forward/backward
+    double linear_x = MAX_LINEAR_SPEED * pitch; 
     linear_x = std::max(std::min(linear_x, MAX_LINEAR_SPEED), -MAX_LINEAR_SPEED);
 
-    // Map Roll to Sideways Motion (Y-axis) (Optional)
     double linear_y = 0.0;  // Set to zero for TurtleBot (no strafing)
 
     // Map Yaw to Angular Velocity (Z-axis)
-    double angular_z = MAX_ANGULAR_SPEED * yaw;  // Rotate left/right
+    double angular_z = MAX_ANGULAR_SPEED * yaw; 
     angular_z = std::max(std::min(angular_z, MAX_ANGULAR_SPEED), -MAX_ANGULAR_SPEED);
 
-    // Publish Twist message
     geometry_msgs::Twist twist;
     twist.linear.x = linear_x;
     twist.linear.y = linear_y;
@@ -51,9 +51,8 @@ void imuCallback(const sensor_msgs::Imu::ConstPtr& msg)
 
     cmd_vel_pub.publish(twist);
 
-    // Debugging output
-    // ROS_INFO("IMU -> cmd_vel | Pitch: %.2f | Roll: %.2f | Yaw: %.2f | X: %.2f | Z: %.2f",
-    //          pitch, roll, yaw, linear_x, angular_z);
+    ROS_INFO("IMU -> cmd_vel | Pitch: %.2f | Roll: %.2f | Yaw: %.2f | X: %.2f | Z: %.2f",
+             pitch, roll, yaw, linear_x, angular_z);
 }
 
 int main(int argc, char **argv)
@@ -61,10 +60,8 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "imu_to_cmdvel");
     ros::NodeHandle n;
 
-    // Subscribe to IMU data
     ros::Subscriber imu_sub = n.subscribe("/imu/data", 1000, imuCallback);
 
-    // Publish to /cmd_vel
     cmd_vel_pub = n.advertise<geometry_msgs::Twist>("/cmd_vel", 10);
 
     ros::spin();

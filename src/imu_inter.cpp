@@ -9,6 +9,10 @@
 
 #define PACKET_SIZE 28 
 
+float alpha = 0.90; // Tuning parameter (0.95 - 0.99 works well)
+float roll_filtered = 0.0, pitch_filtered = 0.0, yaw_filtered = 0.0;
+float dt = 0.005;
+
 float bytesToFloat(const uint8_t *bytes)
 {
     float value;
@@ -26,7 +30,7 @@ int main(int argc, char** argv) {
     serial::Serial ser;
     try
     {
-        ser.setPort("/dev/ttyUSB1");  // Change to the correct port
+        ser.setPort("/dev/ttyUSB1");  
         ser.setBaudrate(115200);
         serial::Timeout to = serial::Timeout::simpleTimeout(1000);
         ser.setTimeout(to);
@@ -56,10 +60,10 @@ int main(int argc, char** argv) {
             uint8_t byte;
             ser.read(&byte, 1);
 
-            if (byte == '#')  // Wait until we find the start of a packet
+            if (byte == '#')  
             {
                 buffer[0] = byte;
-                ser.read(&buffer[1], PACKET_SIZE - 1); // Read remaining bytes
+                ser.read(&buffer[1], PACKET_SIZE - 1); 
 
                 // // Debug: Print raw packet
                 // printf("Raw Packet: ");
@@ -69,7 +73,6 @@ int main(int argc, char** argv) {
                 // }
                 // printf("\n");
 
-                // Validate packet
                 if (buffer[0] == '#' && buffer[1] == 's' && buffer[26] == '\r' && buffer[27] == '\n')
                 {
                     float ax = bytesToFloat(&buffer[2]);
@@ -80,9 +83,12 @@ int main(int argc, char** argv) {
                     float gr = bytesToFloat(&buffer[22]);
 
                     // TODO: FILTERS
+                    roll_filtered = alpha * (roll_filtered + gy * dt) + (1 - alpha) * gr;
+                    pitch_filtered = alpha * (pitch_filtered + gy * dt) + (1 - alpha) * gp;
+                    yaw_filtered = alpha * yaw_filtered + (1 - alpha) * gy;
 
                     tf2::Quaternion q;
-                    q.setRPY(gr * M_PI / 180.0, gp * M_PI / 180.0, gy * M_PI / 180.0); // Convert to radians
+                    q.setRPY(roll_filtered * M_PI / 180.0, pitch_filtered * M_PI / 180.0, yaw_filtered * M_PI / 180.0); 
                     q.normalize();
 
                     // Publish IMU message
@@ -109,48 +115,7 @@ int main(int argc, char** argv) {
                 }
             }
         }
-        // if (ser.available() >= PACKET_SIZE) // Ensure a full packet is available
-        // {
-        //     ser.read(buffer.data(), PACKET_SIZE); // Read full packet at once
-
-        //     // Validate packet structure
-        //     if (buffer[0] == '#' && buffer[1] == 's' && buffer[26] == '\r' && buffer[27] == '\n')
-        //     {
-        //         // Extract float values
-        //         float ax = bytesToFloat(&buffer[2]);
-        //         float ay = bytesToFloat(&buffer[6]);
-        //         float az = bytesToFloat(&buffer[10]);
-        //         float gy = bytesToFloat(&buffer[14]);
-        //         float gp = bytesToFloat(&buffer[18]);
-        //         float gr = bytesToFloat(&buffer[22]);
-
-        //         tf2::Quaternion q;
-        //         q.setRPY(gr * M_PI / 180.0, gp * M_PI / 180.0, gy * M_PI / 180.0); // Convert to radians
-        //         q.normalize();
-
-        //         // Publish IMU message
-        //         sensor_msgs::Imu imu_msg;
-        //         imu_msg.header.stamp = ros::Time::now();
-        //         imu_msg.header.frame_id = "imu_link";
-
-        //         imu_msg.orientation.x = q.x();
-        //         imu_msg.orientation.y = q.y();
-        //         imu_msg.orientation.z = q.z();
-        //         imu_msg.orientation.w = q.w();
-
-        //         imu_msg.linear_acceleration.x = ax;
-        //         imu_msg.linear_acceleration.y = ay;
-        //         imu_msg.linear_acceleration.z = az;
-
-        //         imu_pub.publish(imu_msg);
-
-        //         ROS_INFO("IMU Data: ax=%.3f ay=%.3f az=%.3f gy=%.3f gp=%.3f gr=%.3f", ax, ay, az, gy, gp, gr);
-        //     }
-        //     else
-        //     {
-        //         ROS_WARN("Invalid packet received");
-        //     }
-        // }
+       
 
         ros::spinOnce();
         loop_rate.sleep();
