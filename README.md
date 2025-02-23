@@ -4,7 +4,7 @@ In this challenge, I decided to work with ROS Noetic on my Ubuntu 20.04 Virtual 
 I have picked the 1. Option as the challenge which is to control a simulated robot using the IMU’s motion data. I try to make everything simple by just making tilting forward/backward/left/right as the main control scheme. The simulated robot that I will be using is the TurtleBot3 in Gazebo.
 
 The challenges are spiltted in to 6 Parts and are timestamped and documented as follows:
-## 1. IMU Setup and Serial Communication (Sending)  13.10
+## 1. IMU Setup and Serial Communication (Sending)  13:10
    
 ![circuit](https://github.com/user-attachments/assets/552b00c2-2950-4a6a-87cf-357aae57403b)
 
@@ -28,7 +28,7 @@ Just an imu topic visualization on RVIZ. Nothing special.
 I now wrote a seperated node to subscribe from the imu_inter node and translate the imu messages to the cmd_vel message for controlling the turtlebot. I also made a launch file for convenience in testing.
 [IMU Robot Control](https://www.youtube.com/watch?v=q_BjnuRnBN0&ab_channel=zaldraxiz)
 
-## 6. Playing around with filters 17.18
+## 6. Playing around with filters 17:18
    
 After everything is done, I went back to the imu_inter node and tried playing around with filters. I decided to use the complementary filter in this case because it was easy to implement but not too simple like the moving average. I know the EKF is likely the best option for this but if I were to use it, I have to change the packets in the arduino side to send angular velocity instead of roll, pitch, yaw. And I also have not much experience with EKF, so I decided to drop the idea to save time.
 
